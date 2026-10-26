@@ -22,8 +22,8 @@ builder.Services.AddCors(o =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApiDocument(d =>
 {
-    d.Title = "Pizza Place";
-    d.Version = "v1";
+    d.Title = "Helmuth's Pizza Place";
+    d.Version = "v0.0.2";
 });
 
 // Register services:
