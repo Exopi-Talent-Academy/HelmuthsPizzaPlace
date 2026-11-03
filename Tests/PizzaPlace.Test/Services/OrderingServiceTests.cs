@@ -57,7 +57,7 @@ public class OrderingServiceTests
             .ReturnsAsync(false);
         stockService.Setup(x => x.GetStock(order, recipes))
             .ReturnsAsync(returnedStock);
-        pizzaOven.Setup(x => x.PreparePizzas(prepareOrders, returnedStock))
+        pizzaOven.Setup(x => x.PreparePizzas(prepareOrders))
             .ReturnsAsync(pizzas);
 
         var service = GetService(stockService.Object, recipeService.Object, pizzaOven.Object);

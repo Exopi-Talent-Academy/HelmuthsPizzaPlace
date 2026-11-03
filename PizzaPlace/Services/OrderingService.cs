@@ -16,14 +16,14 @@ public class OrderingService(
         if (await stockService.HasInsufficientStock(order, recipes))
             throw new PizzaException("Unable to take in order. Insufficient stock.");
 
-        var stock = await stockService.GetStock(order, recipes);
+        var ingredients = await stockService.GetStock(order, recipes);
 
         var prepareOrder = order.RequestedOrder
             .GroupBy(x => x.PizzaType)
             .Select(x => new PizzaPrepareOrder(GetPizzaRecipe(x.Key, recipes), x.Aggregate(0, (total, request) => total + request.Amount)))
             .ToComparableList();
 
-        return await pizzaOven.PreparePizzas(prepareOrder, stock);
+        return await pizzaOven.PreparePizzas(prepareOrder);
 
         PizzaRecipeDto GetPizzaRecipe(PizzaRecipeType pizzaType, ComparableList<PizzaRecipeDto> recipes) =>
             recipes.FirstOrDefault(x => x.RecipeType == pizzaType) ??

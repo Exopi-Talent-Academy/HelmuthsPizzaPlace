@@ -12,10 +12,8 @@ public abstract class PizzaOven(TimeProvider timeProvider) : IPizzaOven
     private readonly Dictionary<Guid, Task<(Pizza?, Guid)>> _pizzasInOven = [];
     private readonly object _ovenLock = new();
 
-    public async Task<IEnumerable<Pizza>> PreparePizzas(ComparableList<PizzaPrepareOrder> order, ComparableList<StockDto> stock)
+    public async Task<IEnumerable<Pizza>> PreparePizzas(ComparableList<PizzaPrepareOrder> order)
     {
-        if (!stock.HasEnough(order.GetRequiredStock()))
-            throw new PizzaException("Not enough ingredients to create all pizzas.");
 
         List<(PizzaRecipeDto Recipe, Guid OrderGuid)> recipeOrders = order
             .SelectMany(order => Enumerable.Range(0, order.OrderAmount).Select(_ => (order.RecipeDto, Guid.NewGuid())))

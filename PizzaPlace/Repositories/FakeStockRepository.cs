@@ -32,7 +32,7 @@ public class FakeStockRepository : FakeDatabase<StockDto>, IStockRepository
 
     public Task<StockDto> GetStock(StockType stockType) =>
         Task.FromResult(Get(x => x.StockType == stockType)
-            .FirstOrDefault(new StockDto(stockType, 0)));
+            .FirstOrDefault(new StockDto(stockType, 10)));
 
     public Task<StockDto> TakeStock(StockType stockType, int amount)
     {

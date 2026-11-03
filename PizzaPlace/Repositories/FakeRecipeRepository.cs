@@ -21,6 +21,7 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
 
     public Task<PizzaRecipeDto> GetRecipe(PizzaRecipeType recipeType)
     {
+        AddStandardRecipes();
         var recipe = Get(x => x.RecipeType == recipeType)
             .FirstOrDefault() ?? throw new PizzaException($"Recipe does not exists of type {recipeType}.");
 
@@ -51,5 +52,38 @@ public class FakeRecipeRepository : FakeDatabase<PizzaRecipeDto>, IRecipeReposit
                 new StockDto(StockType.UngenericSpices, 1)
             ], 10),
         ];
+    }
+
+    public Task<PizzaRecipeDto> UpdateRecipe(PizzaRecipeDto recipe)
+    {
+        if (recipe.Id <= 0)
+        {
+            throw new PizzaException(
+                "A recipe id is required when updating a recipe.");
+        }
+
+        lock (_lock)
+        {
+            var existingRecipe = Get(recipe.Id);
+
+            if (existingRecipe is null)
+            {
+                throw new PizzaException($"Recipe with id {recipe.Id} does not exist.");
+            }
+
+            var duplicateType = Get(recipeItem =>
+                recipeItem.RecipeType == recipe.RecipeType &&
+                recipeItem.Id != recipe.Id).Any();
+
+            if (duplicateType)
+            {
+                throw new PizzaException(
+                    $"Recipe already added for {recipe.RecipeType}.");
+            }
+
+            Update(recipe, recipe.Id);
+
+            return Task.FromResult(recipe);
+        }
     }
 }
